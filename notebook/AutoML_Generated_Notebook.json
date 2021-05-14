@@ -1,0 +1,137 @@
+{
+	"name": "AutoML_Generated_Notebook",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sparkpoolMedium",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/chaxu-test/providers/Microsoft.Synapse/workspaces/chaxueus2/bigDataPools/sparkpoolMedium",
+				"name": "sparkpoolMedium",
+				"type": "",
+				"endpoint": null,
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": null,
+				"nodeCount": 0,
+				"cores": 0,
+				"memory": 0,
+				"extraHeader": null
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import azureml.core\n",
+					"\n",
+					"from azureml.core import Experiment, Workspace, Dataset, Datastore\n",
+					"from azureml.train.automl import AutoMLConfig"
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"subscription_id = \"051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3\"\n",
+					"resource_group = \"chaxu-test\"\n",
+					"workspace_name = \"chaxuamleus\"\n",
+					"experiment_name = \"nyc_taxi_automl_run2\"\n",
+					"\n",
+					"ws = Workspace(subscription_id = subscription_id, resource_group = resource_group, workspace_name = workspace_name)\n",
+					"experiment = Experiment(ws, experiment_name)"
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df = spark.sql(\"SELECT * FROM default.nyc_tlc\")\n",
+					"\n",
+					"datastore = Datastore.get_default(ws)\n",
+					"dataset = register_spark_dataframe(df, datastore, name = experiment_name + \"-dataset\")\n",
+					"dataset_train, dataset_test = dataset.random_split(percentage = 0.8)"
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"automl_config = AutoMLConfig(spark_context = sc,\n",
+					"                             task = \"regression\",\n",
+					"                             training_data = dataset_train,\n",
+					"                             label_column_name = \"tipAmount\",\n",
+					"                             primary_metric = \"spearman_correlation\",\n",
+					"                             experiment_timeout_hours = 1,\n",
+					"                             max_concurrent_iterations = 2,\n",
+					"                             enable_onnx_compatible_models = True)"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"run = experiment.submit(automl_config)"
+				],
+				"attachments": null,
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"displayHTML(\"<a href={} target='_blank'>Your experiment in Azure Machine Learning portal: {}</a>\".format(run.get_portal_url(), run.id))"
+				],
+				"attachments": null,
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"run.wait_for_completion()"
+				],
+				"attachments": null,
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"model = run.register_model(model_name = 'nyc_taxi_automl_run2_best_model', model_path = 'outputs/model.pkl')"
+				],
+				"attachments": null,
+				"execution_count": null
+			}
+		]
+	}
+}

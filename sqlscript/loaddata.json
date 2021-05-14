@@ -1,0 +1,16 @@
+{
+	"name": "loaddata",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.objects WHERE NAME = 'nyc_taxi_4' AND TYPE = 'U')\nCREATE TABLE dbo.nyc_taxi_4\n(\n\ttipped int,\n\t\"fare.amount\" real,\n\t\"payment.type\" bigint,\n\t\"passenger.count\" int,\n\t\"trip.distance\" float,\n\t\"trip.time.secs\" bigint,\n\t\"pickup.time.bin\" nvarchar(30)\n)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tCLUSTERED COLUMNSTORE INDEX\n)\nGO\n\nCOPY INTO dbo.nyc_taxi_4\n(tipped 1, \"fare.amount\" 2, \"payment.type\" 3, \"passenger.count\" 4, \"trip.distance\" 5, \"trip.time.secs\" 6, \"pickup.time.bin\" 7)\nFROM 'https://yifsoadlsgen2westus2.dfs.core.windows.net/sparkjob/TestData/test_data.csv'\nWITH\n(\n\tFILE_TYPE = 'CSV',\n\tROWTERMINATOR='0x0A',\n\tFIELDQUOTE = '\"',\n\tFIELDTERMINATOR = ',',\n\tFIRSTROW = 2\n)\nGO\n\nSELECT TOP 100 * FROM nyc_taxi_4\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

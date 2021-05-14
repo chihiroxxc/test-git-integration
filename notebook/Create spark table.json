@@ -1,0 +1,47 @@
+{
+	"name": "Create spark table",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sparkpoolMedium",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2
+		},
+		"metadata": {
+			"language_info": {
+				"name": "sql"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/chaxu-test/providers/Microsoft.Synapse/workspaces/chaxueus2/bigDataPools/sparkpoolMedium",
+				"name": "sparkpoolMedium",
+				"type": "Spark",
+				"endpoint": "https://chaxueus2.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpoolMedium",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"CREATE TABLE mytestdb.myParquetTable(myId int, myName string, myBirthdate date) USING Parquet"
+				],
+				"attachments": null,
+				"execution_count": 2
+			}
+		]
+	}
+}

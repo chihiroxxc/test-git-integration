@@ -1,0 +1,17 @@
+{
+	"name": "DestinationDataset_ojz",
+	"properties": {
+		"annotations": [],
+		"type": "SqlPoolTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "chaxu",
+			"table": "newYorkTaxi"
+		},
+		"sqlPool": {
+			"referenceName": "chaxusqlpool",
+			"type": "SqlPoolReference"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
